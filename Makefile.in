@@ -1,10 +1,4 @@
 ########################################
-# set platform/OS-specific variables
-SOLARIS_CPP = /home/dragojev/local/gcc/bin/g++
-
-MFLAGS = -j2
-
-########################################
 # set platform specific variables
 OS_NAME = $(shell uname -s)
 
@@ -21,22 +15,22 @@ ifeq ($(OS_NAME), SunOS)
 endif
 
 ifeq ($(OS), MacOS)
-	CPPFLAGS = -DSB7_TT_MACOS
-	LDFLAGS = -pthread -framework CoreServices
-	CPP = g++
+    CPPFLAGS = -DSB7_TT_MACOS
+    LDFLAGS = -pthread -framework CoreServices
+    CPP = g++
 endif
 
 ifeq ($(OS), Linux)
-	CPPFLAGS = -DSB7_TT_LINUX -pthread
-	LDFLAGS = -lrt -lpthread
-	CPP = g++
+    CPPFLAGS = -DSB7_TT_LINUX -pthread
+    LDFLAGS = -lrt -lpthread
+    CPP = g++
 endif
 
 ifeq ($(OS), Solaris)
     LPDSTM_CPPFLAGS = -DSB7_TT_SOLARIS
     CPPFLAGS = -mt
     LDFLAGS = -lrt -mt
-	CPP = $(SOLARIS_CPP)
+    CPP = g++
 endif
 
 ########################################
@@ -71,8 +65,8 @@ endif
 
 ifeq ($(ARCH), sparc64)
     CPPFLAGS += -D SB7_TT_SPARC -D SB7_TT_64
-	CPPFLAGS += -m64
-	LDFLAGS += -m64
+    CPPFLAGS += -m64
+    LDFLAGS += -m64
 endif
 
 CPPFLAGS += $(LPDSTM_CPPFLAGS)
@@ -93,35 +87,35 @@ TARGET_DOCS_DIR = ./target/docs
 CPPFLAGS += -Wall -Wno-non-template-friend
 
 # tl2 dirs
-TL2_ROOT_DIR = /Users/aleksandar/work/tl2/tl2-x86-0.9.5
+TL2_ROOT_DIR = ../tl2-x86
 TL2_BIN_DIR = $(TL2_ROOT_DIR)
 TL2_INC_DIR = $(TL2_ROOT_DIR)
 
 # tinySTM dirs
-TINY_STM_ROOT_DIR = /Users/aleksandar/work/tinySTM/tinySTM-0.9.9
+TINY_STM_ROOT_DIR = ../tinySTM
 TINY_STM_BIN_DIR = ${TINY_STM_ROOT_DIR}/lib
 TINY_STM_INC_DIR = ${TINY_STM_ROOT_DIR}/include
 
 # wlpdstm dirs
-WLPDSTM_ROOT_DIR = /Users/aleksandar/work/wlpdstm
+WLPDSTM_ROOT_DIR = ../wlpdstm
 WLPDSTM_BIN_DIR = ${WLPDSTM_ROOT_DIR}/lib
 WLPDSTM_INC_DIR = ${WLPDSTM_ROOT_DIR}/include
 
 # gc dirs
-GC_BIN_DIR = /home/aleksandar/libs/lib
-GC_INC_DIR = /home/aleksandar/libs/include/gc
+GC_BIN_DIR = /usr/lib/`gcc -print-multiarch`
+GC_INC_DIR = /usr/include/gc
 
 # tbb malloc dirs
-TBB_MALLOC_INCLUDE_DIR=/home/aleksandar/work/epfl/gc/tbb20_20070927oss_src/include/tbb
-TBB_MALLOC_LIB_DIR=/home/aleksandar/work/epfl/gc/tbb20_20070927oss_src/build/linux_ia32_gcc_cc4.1.3_libc2.6.1_kernel2.6.22_release
+TBB_MALLOC_INCLUDE_DIR=/usr/include
+TBB_MALLOC_LIB_DIR=/usr/lib/`gcc -print-multiarch`
 
 # txmm dirs
-TXMM_INCLUDE_DIR=/home/aleksandar/work/epfl/gc/txmm/include/tbb
-TXMM_LIB_DIR=/home/aleksandar/work/epfl/gc/txmm/build/linux_ia32_gcc_cc4.1.3_libc2.6.1_kernel2.6.22_release
+TXMM_INCLUDE_DIR=
+TXMM_LIB_DIR=
 
 # custom heaplayers based memory managers dirs
-CUSTOM_MM_INCLUDE_DIR=/home/aleksandar/work/epfl/gc/work/heaplayers-3.7/src/include
-CUSTOM_MM_LIB_DIR=/home/aleksandar/work/epfl/gc/work/heaplayers-3.7/target/dist
+CUSTOM_MM_INCLUDE_DIR=
+CUSTOM_MM_LIB_DIR=
 
 
 ########################################
@@ -184,7 +178,7 @@ STM_CPPFLAGS_wlpdstm = -I$(WLPDSTM_INC_DIR) -D STM_WLPDSTM
 STM_LDFLAGS_wlpdstm = -L$(WLPDSTM_BIN_DIR) -lwlpdstm
 
 ifeq ($(STM), )
-	STM = wlpdstm
+$(error STM is not set)
 endif
 
 CPPFLAGS += $(STM_CPPFLAGS_${STM})
