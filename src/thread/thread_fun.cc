@@ -82,7 +82,7 @@ void *sb7::worker_thread(void *data) {
 			// failed and aborted
 			mem_tx_abort();
 			obj_log_tx_abort();
-				
+
 			wtdata->failed_ops[opind]++;
 
 			// skip this calculation below
@@ -125,7 +125,7 @@ void *sb7::worker_thread(void *data) {
 		const Operation *op = wtdata->operations->getOperations()[opind];
 
 		// check if operation is read only
-		stm_tx_attr_t _a = {0, hintRo && op->isReadOnly()};
+		stm_tx_attr_t _a = {.read_only = hintRo && op->isReadOnly()};
 
 		volatile bool abort = false;
 
@@ -133,8 +133,8 @@ void *sb7::worker_thread(void *data) {
 		long start_time = get_time_ms();
 
 		// execute transaction
-		sigjmp_buf *_e = stm_get_env();
-		int status = sigsetjmp(*_e, 0);
+		sigjmp_buf *_e = ::stm_start(_a);
+		int status = _e ? sigsetjmp(*_e, 0) : 0;
 
 		if(!abort) {
 			// count aborts
@@ -146,14 +146,14 @@ void *sb7::worker_thread(void *data) {
 			}
 
 			mem_tx_start();
-			::stm_start(_e, &_a);
 
 			try {
 				// transaction body
 				op->run();
 			} catch (Sb7Exception) {
 				abort = true;
-				::stm_abort();
+				::stm_stop(0);
+				goto fail;
 			}
 
 			::stm_commit();
@@ -161,10 +161,11 @@ void *sb7::worker_thread(void *data) {
 			mem_tx_commit();
 			obj_log_tx_commit();
 		} else {
+fail:
 			// failed and aborted
 			mem_tx_abort();
 			obj_log_tx_abort();
-				
+
 			wtdata->failed_ops[opind]++;
 
 			// skip this calculation below

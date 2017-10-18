@@ -12,7 +12,7 @@ namespace sb7 {
 
 	void *run_tx(
 		tx_fun fun,
-		int ro_flag = 0,
+		unsigned int ro_flag = 0,
 		tx_param param = NULL,
 		tx_abort_fun abort_fun = NULL,
 		tx_abort_param abort_param = NULL);

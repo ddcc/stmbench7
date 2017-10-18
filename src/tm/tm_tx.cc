@@ -8,7 +8,7 @@
 #include "../common/memory.h"
 
 #ifdef STM_WLPDSTM
-void* sb7::run_tx(sb7::tx_fun fun, int ro_flag, sb7::tx_param param,
+void* sb7::run_tx(sb7::tx_fun fun, unsigned int ro_flag, sb7::tx_param param,
 		sb7::tx_abort_fun abort_fun, sb7::tx_abort_param abort_param) {
 
 	void *ret = NULL;
@@ -40,14 +40,14 @@ void* sb7::run_tx(sb7::tx_fun fun, int ro_flag, sb7::tx_param param,
 
 // PF: START
 #elif defined(STM_TINY_STM)
-void* sb7::run_tx(sb7::tx_fun fun, int ro_flag, sb7::tx_param param,
+void* sb7::run_tx(sb7::tx_fun fun, unsigned int ro_flag, sb7::tx_param param,
 		sb7::tx_abort_fun abort_fun, sb7::tx_abort_param abort_param) {
 
 	void *ret = NULL;
 
-	stm_tx_attr_t _a = {0, ro_flag};
-	sigjmp_buf *_e = stm_get_env();
-	int status = sigsetjmp(*_e, 0);
+	stm_tx_attr_t _a = {.read_only = !!ro_flag};
+	sigjmp_buf *_e = ::stm_start(_a);
+	int status = _e ? sigsetjmp(*_e, 0) : 0;
 
 	if(status != 0) {
 		if(abort_fun != NULL) {
@@ -58,7 +58,6 @@ void* sb7::run_tx(sb7::tx_fun fun, int ro_flag, sb7::tx_param param,
 	}
 
 	mem_tx_start();
-	::stm_start(_e, &_a);
 
 	ret = fun(param);
 	::stm_commit();
@@ -71,7 +70,7 @@ void* sb7::run_tx(sb7::tx_fun fun, int ro_flag, sb7::tx_param param,
 // PF: END
 
 #else
-void* sb7::run_tx(sb7::tx_fun fun, int ro_flag, sb7::tx_param param,
+void* sb7::run_tx(sb7::tx_fun fun, unsigned int ro_flag, sb7::tx_param param,
 		sb7::tx_abort_fun abort_fun, sb7::tx_abort_param abort_param) {
 	TX_DATA;
 	volatile bool first = true;

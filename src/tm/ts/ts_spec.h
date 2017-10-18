@@ -1,7 +1,7 @@
 #include "stm.h"
 
 inline void sb7::global_init_tm() {
-	::stm_init();
+	::stm_init(NULL);
 }
 
 inline void sb7::thread_init_tm() {
@@ -17,9 +17,9 @@ inline void sb7::thread_clean_tm() {
 }
 
 inline void *sb7::tm_read_word(void *addr) {
-	return (void *)stm_load((volatile stm_word_t *)addr);
+	return (void *)stm_load((const stm_word_t *)addr);
 }
 
 inline void sb7::tm_write_word(void *addr, void *val) {
-	stm_store((volatile stm_word_t *)addr, (stm_word_t)val);
+	stm_store((stm_word_t *)addr, (stm_word_t)val);
 }
