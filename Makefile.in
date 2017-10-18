@@ -1,0 +1,218 @@
+########################################
+# set platform/OS-specific variables
+SOLARIS_CPP = /home/dragojev/local/gcc/bin/g++
+
+MFLAGS = -j2
+
+########################################
+# set platform specific variables
+OS_NAME = $(shell uname -s)
+
+ifeq ($(OS_NAME), Darwin)
+    OS = MacOS
+endif
+
+ifeq ($(OS_NAME), Linux)
+    OS = Linux
+endif
+
+ifeq ($(OS_NAME), SunOS)
+    OS = Solaris
+endif
+
+ifeq ($(OS), MacOS)
+	CPPFLAGS = -DSB7_TT_MACOS
+	LDFLAGS = -pthread -framework CoreServices
+	CPP = g++
+endif
+
+ifeq ($(OS), Linux)
+	CPPFLAGS = -DSB7_TT_LINUX -pthread
+	LDFLAGS = -lrt -lpthread
+	CPP = g++
+endif
+
+ifeq ($(OS), Solaris)
+    LPDSTM_CPPFLAGS = -DSB7_TT_SOLARIS
+    CPPFLAGS = -mt
+    LDFLAGS = -lrt -mt
+	CPP = $(SOLARIS_CPP)
+endif
+
+########################################
+# set architecture specific flags
+ifeq ($(ARCH), )
+    ARCH_NAME = $(shell uname -m)
+endif
+
+ifeq ($(ARCH_NAME), i386)
+    ARCH = x86
+endif
+
+ifeq ($(ARCH_NAME), i686)
+    ARCH = x86
+endif
+
+ifeq ($(ARCH_NAME), x86_64)
+    ARCH = x86_64
+endif
+
+ifeq ($(ARCH_NAME), sun4v)
+    ARCH = sparc64
+endif
+
+ifeq ($(ARCH), x86)
+    CPPFLAGS += -D SB7_TT_X86 -D SB7_TT_32
+endif
+
+ifeq ($(ARCH), x86_64)
+    CPPFLAGS += -D SB7_TT_X86 -D SB7_TT_64
+endif
+
+ifeq ($(ARCH), sparc64)
+    CPPFLAGS += -D SB7_TT_SPARC -D SB7_TT_64
+	CPPFLAGS += -m64
+	LDFLAGS += -m64
+endif
+
+CPPFLAGS += $(LPDSTM_CPPFLAGS)
+LDFLAGS += $(LPDSTM_LDFLAGS)
+
+
+########################################
+# set initial values for the core variables
+
+# dirs to use
+SRC_DIR = ./src
+SRC_DOCS_DIR = ./docs
+
+TARGET_DIR = ./target
+OBJ_DIR = ./target/obj
+TARGET_DOCS_DIR = ./target/docs
+
+CPPFLAGS += -Wall -Wno-non-template-friend
+
+# tl2 dirs
+TL2_ROOT_DIR = /Users/aleksandar/work/tl2/tl2-x86-0.9.5
+TL2_BIN_DIR = $(TL2_ROOT_DIR)
+TL2_INC_DIR = $(TL2_ROOT_DIR)
+
+# tinySTM dirs
+TINY_STM_ROOT_DIR = /Users/aleksandar/work/tinySTM/tinySTM-0.9.9
+TINY_STM_BIN_DIR = ${TINY_STM_ROOT_DIR}/lib
+TINY_STM_INC_DIR = ${TINY_STM_ROOT_DIR}/include
+
+# wlpdstm dirs
+WLPDSTM_ROOT_DIR = /Users/aleksandar/work/wlpdstm
+WLPDSTM_BIN_DIR = ${WLPDSTM_ROOT_DIR}/lib
+WLPDSTM_INC_DIR = ${WLPDSTM_ROOT_DIR}/include
+
+# gc dirs
+GC_BIN_DIR = /home/aleksandar/libs/lib
+GC_INC_DIR = /home/aleksandar/libs/include/gc
+
+# tbb malloc dirs
+TBB_MALLOC_INCLUDE_DIR=/home/aleksandar/work/epfl/gc/tbb20_20070927oss_src/include/tbb
+TBB_MALLOC_LIB_DIR=/home/aleksandar/work/epfl/gc/tbb20_20070927oss_src/build/linux_ia32_gcc_cc4.1.3_libc2.6.1_kernel2.6.22_release
+
+# txmm dirs
+TXMM_INCLUDE_DIR=/home/aleksandar/work/epfl/gc/txmm/include/tbb
+TXMM_LIB_DIR=/home/aleksandar/work/epfl/gc/txmm/build/linux_ia32_gcc_cc4.1.3_libc2.6.1_kernel2.6.22_release
+
+# custom heaplayers based memory managers dirs
+CUSTOM_MM_INCLUDE_DIR=/home/aleksandar/work/epfl/gc/work/heaplayers-3.7/src/include
+CUSTOM_MM_LIB_DIR=/home/aleksandar/work/epfl/gc/work/heaplayers-3.7/target/dist
+
+
+########################################
+# set the build profile (default=normal)
+CPPFLAGS_normal  =  -ggdb -O3
+CPPFLAGS_fast    =  -DNDEBUG -O3
+CPPFLAGS_debug   =  -ggdb -O0
+CPPFLAGS_gp0     =  -ggdb -pg -O0
+CPPFLAGS_gp      =  -ggdb -pg -O3
+ifeq ($(PROFILE), )
+    PROFILE = debug
+endif
+CPPFLAGS += $(CPPFLAGS_${PROFILE})
+
+
+########################################
+# set memory management
+MM_CPPFLAGS_gc_boehm = -I${GC_INC_DIR} -D MM_GC_BOEHM
+MM_LDFLAGS_gc_boehm = -L${GC_BIN_DIR} -lgc
+
+MM_CPPFLAGS_tbb_malloc = -I${TBB_MALLOC_INCLUDE_DIR} -D MM_TBB_MALLOC
+MM_LDFLAGS_tbb_malloc = ${TBB_MALLOC_LIB_DIR}/MemoryAllocator.o
+
+MM_CPPFLAGS_txmm = -I${TXMM_INCLUDE_DIR} -D MM_TXMM
+MM_LDFLAGS_txmm = ${TXMM_LIB_DIR}/MemoryAllocator.o
+
+MM_CPPFLAGS_txmm_plain = -I${TXMM_INCLUDE_DIR} -D MM_TXMM_PLAIN
+MM_LDFLAGS_txmm_plain = ${TXMM_LIB_DIR}/MemoryAllocator.o
+
+MM_CPPFLAGS_hoard = -I${CUSTOM_MM_INCLUDE_DIR} -D MM_HOARD
+MM_LDFLAGS_hoard = -ldl -L${CUSTOM_MM_LIB_DIR} -lhoard
+
+# lea is broken in version of heaplayers used
+MM_CPPFLAGS_lea = -I${CUSTOM_MM_INCLUDE_DIR} -D MM_LEA
+MM_LDFLAGS_lea = -L${CUSTOM_MM_LIB_DIR} -llea
+
+#MM_CPPFLAGS_txmm = -I${CUSTOM_MM_INCLUDE_DIR} -D MM_TXMM
+#MM_LDFLAGS_txmm = -ldl -L${CUSTOM_MM_LIB_DIR} -ltxmm
+
+MM_CPPFLAGS_glibc =
+MM_LDFLAGS_glibc =
+
+ifeq ($(MM), )
+	MM = glibc
+endif
+
+CPPFLAGS += $(MM_CPPFLAGS_${MM})
+LDFLAGS += $(MM_LDFLAGS_${MM})
+
+
+#######################################
+# include library to use
+STM_CPPFLAGS_tl2 = -I$(TL2_INC_DIR) -D STM_TL2
+STM_LDFLAGS_tl2 = -L$(TL2_BIN_DIR) -ltl2
+
+STM_CPPFLAGS_tinySTM = -I$(TINY_STM_INC_DIR) -D STM_TINY_STM
+STM_LDFLAGS_tinySTM = -L$(TINY_STM_BIN_DIR) -lstm
+
+STM_CPPFLAGS_wlpdstm = -I$(WLPDSTM_INC_DIR) -D STM_WLPDSTM
+STM_LDFLAGS_wlpdstm = -L$(WLPDSTM_BIN_DIR) -lwlpdstm
+
+ifeq ($(STM), )
+	STM = wlpdstm
+endif
+
+CPPFLAGS += $(STM_CPPFLAGS_${STM})
+LDFLAGS += $(STM_LDFLAGS_${STM})
+
+
+#######################################
+# collect malloc stats
+CPPFLAGS_COLLECT_MALLOC_STATS = -D COLLECT_MALLOC_STATS
+
+ifeq ($(COLLECT_MALLOC_STATS), yes)
+	CPPFLAGS += $(CPPFLAGS_COLLECT_MALLOC_STATS)
+endif
+
+
+#######################################
+# collect txmm stats
+CPPFLAGS_COLLECT_TXMM_STATS = -D COLLECT_TXMM_STATISTICS
+
+ifeq ($(COLLECT_TXMM_STATS), yes)
+	CPPFLAGS += $(CPPFLAGS_COLLECT_TXMM_STATS)
+endif
+
+#######################################
+# collect total size stats
+CPPFLAGS_COLLECT_TOTAL_SIZE_STATS = -D COLLECT_TOTAL_SIZE_STATISTICS
+
+ifeq ($(COLLECT_TOTAL_SIZE_STATS), yes)
+	CPPFLAGS += $(CPPFLAGS_COLLECT_TOTAL_SIZE_STATS)
+endif
+
