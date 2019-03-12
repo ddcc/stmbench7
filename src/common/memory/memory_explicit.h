@@ -292,7 +292,7 @@ inline bool sb7::is_timestamp_dominated(const sb7::v_timestamp *older,
 		unsigned ots = older->ts[i * CACHE_LINE_SIZE];
 		unsigned nts = newer->ts[i * CACHE_LINE_SIZE];
 
-		if(!(nts > ots || nts % 2 == 0)) {
+		if(!(nts > ots)) { // || nts % 2 == 0)) {
 			ret = false;
 			break;
 		}

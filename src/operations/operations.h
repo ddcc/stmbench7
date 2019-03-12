@@ -75,6 +75,10 @@ namespace sb7 {
 				generateCdf();
 			}
 
+			~Operations() {
+				freeOperations();
+			}
+
 		public:
 			int size() const {
 				return ops.size();
@@ -98,6 +102,8 @@ namespace sb7 {
 			void initOperations(DataHolder *dh);
 
 			void generateCdf();
+
+			void freeOperations();
 
 		private:
 			std::vector<OperationType> optypes;

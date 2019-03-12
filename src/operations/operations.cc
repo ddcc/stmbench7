@@ -176,3 +176,9 @@ void sb7::Operations::generateCdf() {
 
 	cdf.push_back(1.0);
 }
+
+void sb7::Operations::freeOperations() {
+	for (std::vector<Operation *>::iterator it = ops.begin(); it != ops.end(); ++it)
+		delete *it;
+	ops.clear();
+}
