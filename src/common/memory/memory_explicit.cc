@@ -60,7 +60,7 @@ void sb7::init_thread_mem() {
 	// get thread identifier
 	unsigned tid = sb7::get_tid();
 
-	assert(tid < MAX_THREADS);
+	assert(tid <= MAX_THREADS);
 
 	// update global timestamp length
 	if(global_timestamp.len < tid + 1) {
