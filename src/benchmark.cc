@@ -245,13 +245,11 @@ void sb7::Benchmark::reportStats(ostream &out) {
 	double totalThroughput = (double)totalSuccess / parameters.getExperimentLengthMs() * 1000;
 	double totalTThroughput = (double)total / parameters.getExperimentLengthMs() * 1000;
 
-	out << "Total throughput: " << totalThroughput << " op/s"
-		<< "  (" << totalTThroughput << " op/s including failed)"
+	out << "Total throughput: " << totalThroughput << " ops"
+		<< "  (" << totalTThroughput << " ops including failed)"
 		<< endl;
 
-	double totalAbortedSec = (double)totalAborted / elapsedTime * 1000;
-
-	out << "Total aborts: " << totalAbortedSec << " op/s"
+	out << "Total aborts: " << totalAborted << " ops"
 		<< endl;
 
 	out << "Elapsed time: " << elapsedTime / 1000.0 << " s" << endl;
