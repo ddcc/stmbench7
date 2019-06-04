@@ -126,7 +126,7 @@ CPPFLAGS_debug   =  -ggdb -O0
 CPPFLAGS_gp0     =  -ggdb -pg -O0
 CPPFLAGS_gp      =  -ggdb -pg -O3
 ifeq ($(PROFILE), )
-    PROFILE = debug
+    PROFILE = normal
 endif
 CPPFLAGS += $(CPPFLAGS_${PROFILE})
 
