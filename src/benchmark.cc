@@ -133,6 +133,8 @@ void sb7::Benchmark::start() {
 
 	long end_time = get_time_ms();
 	elapsedTime = end_time - start_time;
+
+	global_clean_tm();
 }
 
 void sb7::Benchmark::report(ostream &out) {

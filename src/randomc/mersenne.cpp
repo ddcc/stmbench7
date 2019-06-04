@@ -24,8 +24,7 @@ void TRandomMersenne::RandomInit(uint32_rnd seed) {
     mt[mti] = (1812433253UL * (mt[mti-1] ^ (mt[mti-1] >> 30)) + mti);}
 
   // detect computer architecture
-  union {double f; uint32_rnd i[2];} convert;
-  convert.f = 1.0;
+  union {double f; uint32_rnd i[2];} convert = { .f = 1.0 };
   // Note: Old versions of the Gnu g++ compiler may make an error here,
   // compile with the option  -fenum-int-equiv  to fix the problem
   if (convert.i[1] == 0x3FF00000) Architecture = LITTLE_ENDIAN1;

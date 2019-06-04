@@ -20,7 +20,7 @@
 
 #include "tid.h"
 
-static unsigned next_tid = 0;
+static uintptr_t next_tid = 0;
 
 ::pthread_key_t sb7::tid_key;
 
