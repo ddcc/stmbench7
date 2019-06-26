@@ -14,6 +14,10 @@
 
 #include <map>
 
+#ifndef ORIGINAL
+# include <typeinfo>
+#endif /* ORIGINAL */
+
 #include "tm_spec.h"
 #include "../common/memory.h"
 
@@ -24,6 +28,12 @@ namespace sb7 {
 	class Handle : public Sb7TxAlloced {
 		public:
 			T *obj;
+
+#ifndef ORIGINAL
+		inline T** const getRawPtr() {
+			return &obj;
+		}
+#endif /* ORIGINAL */
 	};
 	
 
@@ -217,6 +227,10 @@ namespace sb7 {
 			// so that sh_ptr<T>s can be stored in STL collections
 			bool operator<(const sh_ptr<T>& rhs) const;
 
+#ifndef ORIGINAL
+			Handle<T> *getRawHandle() const;
+#endif /* ORIGINAL */
+
 			template <typename T2> operator sh_ptr<T2>();
 
 		private:
@@ -398,6 +412,13 @@ namespace sb7 {
 		return (obj < rhs.obj);
 	}
 
+#ifndef ORIGINAL
+	template <typename T>
+	inline Handle<T> *sh_ptr<T>::getRawHandle() const {
+		return obj;
+	}
+#endif /* ORIGINAL */
+
 	template <typename T>
 	void tx_delete(sh_ptr<T> &ptr) {
 		void *addr = (void *)&(ptr.obj->obj);
@@ -419,7 +440,11 @@ namespace sb7 {
 
 	template <typename T>
 	inline const T *rd_ptr<T>::open_shared(const sh_ptr<T>& shared) {
+#ifndef ORIGINAL
+		return (const T *)tm_read_word_tag((void *)&(shared.obj->obj), typeid(T).hash_code());
+#else
 		return (const T *)tm_read_word((void *)&(shared.obj->obj));
+#endif /* ORIGINAL */
 	}
 
 	template <typename T>
@@ -502,7 +527,11 @@ namespace sb7 {
 		// transaction commits successfully
 		if(ret == NULL) {
 			// val is current address of object
+#ifndef ORIGINAL
+			void *val = tm_read_word_tag(addr, typeid(T).hash_code());
+#else
 			void *val = tm_read_word(addr);
+#endif /* ORIGINAL */
 
 			// clone current object and save it as a new value
 			ret = ((Object<T> *)val)->cloneFull();

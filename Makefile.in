@@ -120,7 +120,7 @@ CUSTOM_MM_LIB_DIR=
 
 ########################################
 # set the build profile (default=normal)
-CPPFLAGS_normal  =  -ggdb -O3
+CPPFLAGS_normal  =  -ggdb -O3 -DNDEBUG
 CPPFLAGS_fast    =  -DNDEBUG -O3
 CPPFLAGS_debug   =  -ggdb -O0
 CPPFLAGS_gp0     =  -ggdb -pg -O0
@@ -171,8 +171,14 @@ LDFLAGS += $(MM_LDFLAGS_${MM})
 STM_CPPFLAGS_tl2 = -I$(TL2_INC_DIR) -D STM_TL2
 STM_LDFLAGS_tl2 = -L$(TL2_BIN_DIR) -ltl2
 
-STM_CPPFLAGS_tinySTM = -I$(TINY_STM_INC_DIR) -D STM_TINY_STM -fpermissive
-STM_LDFLAGS_tinySTM = -L$(TINY_STM_BIN_DIR) -lstm
+ifneq ($(ORIGINAL), )
+ORIGINAL_tinySTM = -DORIGINAL
+else
+ORIGINAL_tinySTM =
+endif
+
+STM_CPPFLAGS_tinySTM = -I$(TINY_STM_INC_DIR) -D STM_TINY_STM -fpermissive $(ORIGINAL_tinySTM)
+STM_LDFLAGS_tinySTM = -L$(TINY_STM_BIN_DIR) -lstm -lffi
 
 STM_CPPFLAGS_wlpdstm = -I$(WLPDSTM_INC_DIR) -D STM_WLPDSTM
 STM_LDFLAGS_wlpdstm = -L$(WLPDSTM_BIN_DIR) -lwlpdstm
