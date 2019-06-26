@@ -47,6 +47,16 @@ namespace sb7 {
 			 */
 			int replaceChar(char from, char to);
 
+#ifndef ORIGINAL
+			bool isCompatible(const Manual &o) const;
+
+			const string& getText() const;
+
+			string&& getText();
+
+			void assignText(string &&s);
+#endif /* ORIGINAL */
+
 		protected:
 			int m_id;
 			string m_title;
