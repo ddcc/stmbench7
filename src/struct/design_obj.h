@@ -24,6 +24,12 @@ namespace sb7 {
 				return m_buildDate;
 			}
 
+#ifndef ORIGINAL
+			void setBuildDate(int bd) {
+				m_buildDate = bd;
+			}
+#endif /* ORIGINAL */
+
 			void updateBuildDate();
 
 			void nullOperation() const { }

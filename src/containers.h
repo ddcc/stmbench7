@@ -181,6 +181,20 @@ namespace sb7 {
 				return iter != inner.end();
 			}
 
+#ifndef ORIGINAL
+			const inner_set &get() const {
+				return inner;
+			}
+
+			inner_set &&get() {
+				return std::move(inner);
+			}
+
+			void assign(inner_set &&s) {
+				inner = s;
+			}
+#endif /* ORIGINAL */
+
 		private:
 			inner_set inner;
 	};
