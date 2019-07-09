@@ -44,7 +44,7 @@ namespace sb7 {
 	const int Parameters::DEFAULT_READ_ONLY_OPERATIONS_RATIO = 70;
 
 	const int Parameters::DEFAULT_THREAD_NUM = 1;
-	const int Parameters::DEFAULT_EXPERIMENT_LENGTH_MS = 1000;
+	const int Parameters::DEFAULT_EXPERIMENT_LENGTH_MS = 60000;
 
 	const int Parameters::DEFAULT_MAX_LOW_TTC = 999;
 	const int Parameters::DEFAULT_HIGH_TTC_ENTRIES = 200;

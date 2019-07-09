@@ -241,20 +241,23 @@ void sb7::Benchmark::reportStats(ostream &out) {
 		<< "  (" << totalTError << "% including failed)"
 		<< endl;
 
-	// TODO use constant for 1000 - ms in s
-	//double totalThroughput = (double)totalSuccess / elapsedTime * 1000;
-	//double totalTThroughput = (double)total / elapsedTime * 1000;
-	double totalThroughput = (double)totalSuccess / parameters.getExperimentLengthMs() * 1000;
-	double totalTThroughput = (double)total / parameters.getExperimentLengthMs() * 1000;
-
-	out << "Total throughput: " << totalThroughput << " ops"
-		<< "  (" << totalTThroughput << " ops including failed)"
+	out << "Total throughput: " << totalSuccess << " ops"
+		<< "  (" << total << " ops, including failed)"
 		<< endl;
 
 	out << "Total aborts: " << totalAborted << " ops"
 		<< endl;
 
 	out << "Elapsed time: " << elapsedTime / 1000.0 << " s" << endl;
+
+	// TODO use constant for 1000 - ms in s
+	//double totalThroughput = (double)totalSuccess / elapsedTime * 1000;
+	//double totalTThroughput = (double)total / elapsedTime * 1000;
+	double totalThroughput = ((double)totalSuccess / elapsedTime) * 1000;
+	// double totalTThroughput = ((double)total / elapsedTime) * 1000;
+
+	out << "Throughput / elapsed time: " << totalThroughput << " ops / s"
+        << endl;
 
 #ifdef COLLECT_MALLOC_STATS
 	print_malloc_stats(out);
