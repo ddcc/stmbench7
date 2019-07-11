@@ -303,7 +303,7 @@ __attribute__((constructor)) void ops_init() {
 	static ffi_type *argp[] = { &ffi_type_pointer };
 	static ffi_type rets = ffi_type_sint;
 
-	stm_merge_policy_t policy[2] = { STM_MERGE_POLICY_MANUAL, STM_MERGE_POLICY_UNSUPPORTED };
+	stm_merge_policy_t policy[2] = { STM_MERGE_POLICY_FUNCTION, STM_MERGE_POLICY_FUNCTION };
 
 	OP11 = sb7::tm_new_op("OP11", &rets, argp, sizeof(argp) / sizeof(*argp), NULL, ops_merge, policy);
 }

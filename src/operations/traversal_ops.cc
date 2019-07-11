@@ -558,7 +558,7 @@ __attribute__((constructor)) void traversal_init() {
 	static ffi_type reti = ffi_type_sint;
 	static ffi_type retv = ffi_type_void;
 
-	stm_merge_policy_t policy[2] = { STM_MERGE_POLICY_MANUAL, STM_MERGE_POLICY_UNSUPPORTED };
+	stm_merge_policy_t policy[2] = { STM_MERGE_POLICY_FUNCTION, STM_MERGE_POLICY_FUNCTION };
 
 	TRAVERSE_COMPOSITE = sb7::tm_new_op("TRAVERSE_COMPOSITE", &reti, argpp, sizeof(argp) / sizeof(*argp), NULL, traversal_merge, policy);
 	UPDATE_BUILD_DATE = sb7::tm_new_op("UPDATE_BUILD_DATE", &retv, argpp, sizeof(argpp) / sizeof(*argpp), NULL, traversal_merge, policy);
