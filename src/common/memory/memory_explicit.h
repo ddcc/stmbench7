@@ -609,7 +609,7 @@ inline void sb7::mem_tx_abort() {
 #endif
 
 	// run free_dominated here to release memory asap
-	//sb7::free_dominated();
+	sb7::free_dominated();
 }
 
 // Allocator to use with STL containers.
