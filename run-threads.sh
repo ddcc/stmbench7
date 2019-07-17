@@ -14,7 +14,7 @@ for i in 1 2 4 8 16 32 64; do
     echo "Running $i threads at iteration $j"
     RET=1
     while [ $RET -ne 0 ]; do
-      ./sb7_tt -n ${i} > sb7.$i.log
+      ./sb7_tt -n ${i} >> sb7.$i.log
       RET=$?
     done
   done
