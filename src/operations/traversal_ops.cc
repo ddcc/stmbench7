@@ -60,14 +60,14 @@ int sb7::Traversal1::traverse(sh_ptr<BaseAssembly> bassm) const {
 
 int sb7::Traversal1::traverse(sh_ptr<CompositePart> cpart) const {
 #ifndef ORIGINAL
-	tm_begin_op(TRAVERSE_COMPOSITE, NULL, cpart.getRawHandle());
+//	tm_begin_op(TRAVERSE_COMPOSITE, NULL, cpart.getRawHandle());
 #endif /* ORIGINAL */
 	rd_ptr<CompositePart> rd_cpart(cpart);
 	sh_ptr<AtomicPart> sh_rootPart = rd_cpart->getRootPart();
 	Set<sh_ptr<AtomicPart> > visitedPartSet;
 	int ret = traverse(sh_rootPart, visitedPartSet);
 #ifndef ORIGINAL
-	tm_end_op(TRAVERSE_COMPOSITE, &ret);
+//	tm_end_op(TRAVERSE_COMPOSITE, &ret);
 #endif /* ORIGINAL */
 	return ret;
 }
@@ -531,6 +531,7 @@ stm_merge_t traversal_merge(stm_merge_context_t *params) {
 			printf("\nUPDATE_BUILD_DATE addr:%p Set read (old):%p (new):%p (write):%p\n", params->addr, old_s, new_s, write_s);
 # endif
 
+return STM_MERGE_UNSUPPORTED;
 			if (old_s->get() == new_s->get())
 				return STM_MERGE_OK;
 			else if (old_s->get() == write_s->get()) {
