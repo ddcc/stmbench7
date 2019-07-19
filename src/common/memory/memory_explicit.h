@@ -146,6 +146,8 @@ namespace sb7 {
 
 	void free_dominated();
 
+	void mem_gc_inc();
+
 	//////////////////////////////
 	// Declare some data I need //
 	//////////////////////////////
@@ -511,11 +513,6 @@ inline void sb7::free_dominated() {
 	sb7::mem_ptr_arr *curr = egc->freed;
 	sb7::mem_ptr_arr *prev = curr;
 
-	// skip the first as it is never full
-	if(curr != NULL) {
-		curr = curr->next;
-	}
-
 	// now search for the first that can be deleted
 	while(curr != NULL) {
 		if(sb7::is_timestamp_dominated(&(curr->vts), 
@@ -530,6 +527,9 @@ inline void sb7::free_dominated() {
 	// cut off all dominated arrays, if any
 	if(curr != NULL) {
 		prev->next = NULL;
+
+		if (curr == egc->freed)
+			egc->freed = NULL;
 	}
 
 	// curr now points to the first one that can be deleted
@@ -539,11 +539,15 @@ inline void sb7::free_dominated() {
 		for(unsigned i = 0;i < len;i++) {
 			delete(curr->mem_ptr[i]);
 		}
-		
+
 		prev = curr;
 		curr = curr->next;
 		sb7::free_mem_ptr_arr(prev);
 	}
+}
+
+inline void sb7::mem_gc_inc() {
+	global_timestamp.ts[get_tid() * CACHE_LINE_SIZE]++;
 }
 
 inline void sb7::mem_tx_abort() {
