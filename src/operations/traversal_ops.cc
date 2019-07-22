@@ -434,8 +434,11 @@ stm_merge_t traversal_merge(stm_merge_context_t *params) {
 			if (old_q.found != new_q.found || old_q.val != new_q.val)
 				goto bd_unsup;
 
-			if (tx_undo_free(old_di))
+			stm_free_t f = stm_did_free(old_di);
+			if (STM_VALID_FREE(f)) {
+				stm_undo_free(f);
 				tx_free(new_di);
+			}
 
 			return STM_MERGE_OK;
 		/* Conflict is at the AtomicPart pointer */
@@ -523,7 +526,9 @@ stm_merge_t traversal_merge(stm_merge_context_t *params) {
 				s->add(sh_ap);
 			}
 
-			tx_undo_free(old_ap);
+			stm_free_t f = stm_did_free(old_ap);
+			assert(STM_VALID_FREE(f));
+			stm_undo_free(f);
 			tx_free(new_ap);
 
 			return STM_MERGE_OK;
@@ -554,7 +559,9 @@ return STM_MERGE_UNSUPPORTED;
 				return STM_MERGE_OK;
 			}
 
-			tx_undo_free(old_s);
+			stm_free_t f = stm_did_free(old_s);
+			assert(STM_VALID_FREE(f));
+			stm_undo_free(f);
 			tx_free(new_s);
 		}
 

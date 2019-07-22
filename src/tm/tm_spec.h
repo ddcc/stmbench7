@@ -34,6 +34,12 @@ namespace sb7 {
 
     void tm_end_op(const struct stm_op_id op, const void *rval);
 #endif /* ORIGINAL */
+
+    void tm_mem_init();
+
+    void *tm_malloc(size_t size);
+
+    void tm_free(void *addr);
 }
 
 // in addition to defining these functions, tm specific functions

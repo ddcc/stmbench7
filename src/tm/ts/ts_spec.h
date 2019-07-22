@@ -1,3 +1,4 @@
+#include "mod_mem.h"
 #include "stm.h"
 #include "wrappers.h"
 
@@ -55,3 +56,15 @@ inline void sb7::tm_end_op(struct stm_op_id op, const void *rval) {
         throw Sb7Exception("Error ending operation!");
 }
 #endif /* ORIGINAL */
+
+inline void sb7::tm_mem_init() {
+    mod_mem_init();
+}
+
+inline void *sb7::tm_malloc(size_t size) {
+    return stm_malloc(size);
+}
+
+inline void sb7::tm_free(void *addr) {
+    stm_free(addr, 0);
+}

@@ -292,7 +292,9 @@ stm_merge_t ops_merge(stm_merge_context_t *params) {
 			if (oldText[0] != newText[0])
 				write_sh->assignText(old_sh->getText());
 
-			tx_undo_free(old_sh);
+			stm_free_t f = stm_did_free(old_sh);
+			assert(STM_VALID_FREE(f));
+			stm_undo_free(f);
 			tx_free(new_sh);
 
 			return STM_MERGE_OK;

@@ -35,9 +35,6 @@ void *sb7::init_data_holder(void *data) {
 	// finish up this thread
 	thread_clean();
 
-	// increment gc timestamp for t1
-	mem_gc_inc();
-
 	// just return something
 	return NULL;
 }

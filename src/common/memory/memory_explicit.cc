@@ -20,52 +20,15 @@
 using namespace std;
 #endif
 
-// backing storage for timestamp
-volatile sb7::v_timestamp sb7::global_timestamp
-		__attribute__ ((aligned(64)));
-
-// backing storage for tls gc_key
-pthread_key_t sb7::gc_key;
-
 #ifdef COLLECT_MALLOC_STATS
 struct sb7::malloc_stats sb7::malloc_stats_arr[MAX_THREADS];
 #endif
 
 void sb7::global_init_mem() {
-	// for the time being don't worry about freeing this data
-	::pthread_key_create(&gc_key, NULL);
+	tm_mem_init();
 }
 
 void sb7::init_thread_mem() {
-	// initialize tls data
-	sb7::thread_egc_data *egc = (thread_egc_data *)sb7::malloc(
-		sizeof(thread_egc_data));
-
-	// initialize fields
-	egc->freed = NULL;
-#ifndef MM_TXMM
-	egc->free_on_abort = NULL;
-#endif
-
-#ifdef MM_TXMM
-	egc->cleanup_on_abort = NULL;
-#endif
-
-	egc->free_on_commit = NULL;
-
-	egc->parent_egc_data = NULL;
-
-	pthread_setspecific(gc_key, egc);
-
-	// get thread identifier
-	unsigned tid = sb7::get_tid();
-
-	assert(tid <= MAX_THREADS);
-
-	// update global timestamp length
-	if(global_timestamp.len < tid + 1) {
-		global_timestamp.len = tid + 1;
-	}
 }
 
 #ifdef COLLECT_MALLOC_STATS
