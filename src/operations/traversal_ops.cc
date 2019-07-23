@@ -409,6 +409,9 @@ stm_merge_t traversal_merge(stm_merge_context_t *params) {
 			stm_load_value_ptr(r, reinterpret_cast<void **>(&old_di));
 			stm_load_update_ptr(r, reinterpret_cast<void **>(&new_di));
 
+			if (old_di == new_di)
+				return STM_MERGE_OK;
+
 # ifndef NDEBUG
 			printf("\nUPDATE_BUILD_DATE addr:%p DataHolder->m_atomicPartBuildDateIndex read (old):%p (new):%p\n", params->addr, old_di, new_di);
 # endif
@@ -431,6 +434,9 @@ stm_merge_t traversal_merge(stm_merge_context_t *params) {
 			if (old_q.found != new_q.found || old_q.val != new_q.val)
 				goto bd_unsup;
 
+			if (tx_undo_free(old_di))
+				tx_free(new_di);
+
 			return STM_MERGE_OK;
 		/* Conflict is at the AtomicPart pointer */
 		} else if (params->addr == ap && tag == typeid(AtomicPart).hash_code()) {
@@ -443,6 +449,9 @@ stm_merge_t traversal_merge(stm_merge_context_t *params) {
 			assert(STM_VALID_WRITE(w));
 			AtomicPart *write_ap = NULL;
 			stm_store_value_ptr(w, reinterpret_cast<void **>(&write_ap));
+
+			if (old_ap == new_ap)
+				return STM_MERGE_OK;
 
 # ifndef NDEBUG
 			printf("\nUPDATE_BUILD_DATE addr:%p AtomicPart read (old):%p (new):%p (write):%p\n", params->addr, old_ap, new_ap, write_ap);
@@ -514,6 +523,9 @@ stm_merge_t traversal_merge(stm_merge_context_t *params) {
 				s->add(sh_ap);
 			}
 
+			tx_undo_free(old_ap);
+			tx_free(new_ap);
+
 			return STM_MERGE_OK;
 		/* Conflict is at the Set result of the AtomicPartBuildDateIndex query */
 		} else if (tag == typeid(Set<sh_ptr<AtomicPart>>).hash_code()) {
@@ -527,6 +539,9 @@ stm_merge_t traversal_merge(stm_merge_context_t *params) {
 			Set<sh_ptr<AtomicPart>> *write_s = NULL;
 			stm_store_value_ptr(w, reinterpret_cast<void **>(&write_s));
 
+			if (old_s == new_s)
+				return STM_MERGE_OK;
+
 # ifndef NDEBUG
 			printf("\nUPDATE_BUILD_DATE addr:%p Set read (old):%p (new):%p (write):%p\n", params->addr, old_s, new_s, write_s);
 # endif
@@ -539,6 +554,8 @@ return STM_MERGE_UNSUPPORTED;
 				return STM_MERGE_OK;
 			}
 
+			tx_undo_free(old_s);
+			tx_free(new_s);
 		}
 
 bd_unsup:;

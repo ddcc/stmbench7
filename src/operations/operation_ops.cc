@@ -275,6 +275,9 @@ stm_merge_t ops_merge(stm_merge_context_t *params) {
 			Manual *write_sh = NULL;
 			stm_store_value_ptr(w, reinterpret_cast<void **>(&write_sh));
 
+			if (old_sh == new_sh)
+				return STM_MERGE_OK;
+
 # ifndef NDEBUG
 			printf("\nOP11 addr:%p Manual read (old):%p (new):%p (write):%p\n", params->addr, old_sh, new_sh, write_sh);
 # endif
@@ -288,6 +291,9 @@ stm_merge_t ops_merge(stm_merge_context_t *params) {
 			/* Alternates between one of two states. If the old and new texts are in different states, assign back our previous state, instead of incurring the transition penalty. */
 			if (oldText[0] != newText[0])
 				write_sh->assignText(old_sh->getText());
+
+			tx_undo_free(old_sh);
+			tx_free(new_sh);
 
 			return STM_MERGE_OK;
 		}

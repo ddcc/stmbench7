@@ -138,6 +138,10 @@ namespace sb7 {
 	void *tx_malloc(size_t size);
 	void tx_free(Alloced *);
 
+#ifndef ORIGINAL
+	bool tx_undo_free(Alloced *);
+#endif /* ORIGINAL */
+
 	// Functions to invoke on transaction start and end.
 	void mem_tx_start();
 	void mem_tx_start(struct thread_egc_data *pegc);
@@ -406,6 +410,28 @@ inline void *sb7::tx_malloc(size_t size) {
 inline void sb7::tx_free(Alloced *ptr) {
 	sb7::tx_free_on_commit(ptr);
 }
+
+#ifndef ORIGINAL
+inline bool sb7::tx_undo_free(Alloced *ptr) {
+	sb7::thread_egc_data *egc = get_egc_data();
+
+	sb7::mem_ptr_arr *curr = egc->free_on_commit;
+
+	while (curr) {
+		for (unsigned i = curr->len - 1; i < curr->len; --i) {
+			if (curr->mem_ptr[i] == ptr) {
+				curr->mem_ptr[i] = curr->len > 1 ? curr->mem_ptr[curr->len - 1] : NULL;
+				--curr->len;
+				return true;
+			}
+		}
+
+		curr = curr->next;
+	}
+
+	return false;
+}
+#endif /* ORIGINAL */
 
 inline void sb7::mem_tx_start() {
 	mem_tx_start(NULL);
