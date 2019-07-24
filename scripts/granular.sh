@@ -8,9 +8,9 @@ export STM="tinySTM"
 function run () {
     make clean
     make
-    ./run-threads.sh 4
+#   ORIGINAL=1 make
     mkdir -p $OUT/$CONFIG
-    mv *.log $OUT/$CONFIG
+    ./scripts/run-threads.sh ./scripts/abort.sh 3 $OUT/$CONFIG
 }
 
 CONFIG="all"

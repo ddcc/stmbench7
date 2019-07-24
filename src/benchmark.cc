@@ -218,7 +218,7 @@ void sb7::Benchmark::reportStats(ostream &out) {
 	// report summary results
 	sb7::printSection(out, "Summary results");
 
-	int total = totalSuccess + totalFailure;
+	//int total = totalSuccess + totalFailure;
 
 	for(int i = 0;i < operationTypesNum;i++) {
 		OperationType &optype = optypes[i];
@@ -237,27 +237,26 @@ void sb7::Benchmark::reportStats(ostream &out) {
 	out << endl;
 
 	// report total statistics
-	out << "Total sampleError: " << totalError << "%"
-		<< "  (" << totalTError << "% including failed)"
+	//out << "Total sampleError: " << totalError << "%"
+	//	<< "  (" << totalTError << "% including failed)"
+	//	<< endl;
+
+	out << "TThroughput: " << totalSuccess //<< " ops"
+	//	<< "  (" << total << " ops including failed)"
 		<< endl;
 
-	out << "Total throughput: " << totalSuccess << " ops"
-		<< "  (" << total << " ops, including failed)"
+	out << "TAborts: " << totalAborted //<< " ops"
 		<< endl;
 
-	out << "Total aborts: " << totalAborted << " ops"
-		<< endl;
-
-	out << "Elapsed time: " << elapsedTime / 1000.0 << " s" << endl;
+	out << "Time: " << elapsedTime / 1000.0 << endl;
 
 	// TODO use constant for 1000 - ms in s
 	//double totalThroughput = (double)totalSuccess / elapsedTime * 1000;
 	//double totalTThroughput = (double)total / elapsedTime * 1000;
-	double totalThroughput = ((double)totalSuccess / elapsedTime) * 1000;
-	// double totalTThroughput = ((double)total / elapsedTime) * 1000;
+	//double totalThroughput = ((double)totalSuccess / elapsedTime) * 1000;
+	//double totalTThroughput = ((double)total / elapsedTime) * 1000;
 
-	out << "Throughput / elapsed time: " << totalThroughput << " ops / s"
-        << endl;
+	//out << "Throughput / elapsed time: " << totalThroughput << " ops / s" << endl;
 
 #ifdef COLLECT_MALLOC_STATS
 	print_malloc_stats(out);
